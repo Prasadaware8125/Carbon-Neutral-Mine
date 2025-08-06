@@ -1,0 +1,29 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #e0f7fa, #ffffff);
+  color: #333;
+}
+
+h1, h2, h3 {
+  font-weight: bold;
+}
+
+.form-signin input, .form-signin button {
+  font-size: 1.1rem;
+}
+
+.bg-gradient {
+  background: linear-gradient(145deg, #d4f1f9, #fefefe);
+}
+
+button {
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+.shadow {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}

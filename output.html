@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Emission Report</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(to right, #f0f4f8, #d9e2ec);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .report-container {
+      max-width: 1000px;
+      margin: 50px auto;
+      padding: 40px;
+      background-color: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+    #report {
+      background: #fdfdfd;
+      border-left: 6px solid #0d6efd;
+      padding: 30px;
+      font-size: 18px;
+      line-height: 1.8;
+      color: #2d2d2d;
+      border-radius: 8px;
+    }
+    ul {
+      padding-left: 20px;
+    }
+    ul li {
+      margin-bottom: 10px;
+    }
+    .btn-custom {
+      font-size: 18px;
+      padding: 12px 24px;
+      background-color: #0d6efd;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+    }
+    .btn-custom:hover {
+      background-color: #0b5ed7;
+    }
+    h2 {
+      color: #0d6efd;
+      font-weight: bold;
+    }
+    .highlight {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1a202c;
+    }
+  </style>
+</head>
+<body>
+  <div class="container report-container">
+    <h2 class="text-center mb-4">🌱 Carbon Emission Summary Report</h2>
+    <div id="report"></div>
+    <div class="mt-4 text-center">
+      <button class="btn btn-custom" onclick="downloadPDF()">📄 Download Report</button>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    const { jsPDF } = window.jspdf;
+    const data = JSON.parse(localStorage.getItem('formData'));
+
+    const fuelEmission = data.fuel * 2.6;
+    const elecEmission = data.electricity * 0.9;
+    const methane = data.coal * 0.05;
+    const total = parseFloat(data.coal) + fuelEmission + elecEmission + methane;
+    const trees = Math.ceil(total / 0.021);
+    const credits = Math.floor((1000 - total) / 10);
+
+    const htmlReport = `
+      <p class="highlight">Mine Name: ${data.mineName}</p>
+      <p class="highlight">Location: ${data.location}</p>
+      <p class="highlight">Ownership: ${data.ownership}</p>
+      <hr>
+      <ul>
+        <li><strong>Coal Emission:</strong> ${data.coal} tons</li>
+        <li><strong>Fuel Emission:</strong> ${fuelEmission.toFixed(2)} tons</li>
+        <li><strong>Electricity Emission:</strong> ${elecEmission.toFixed(2)} tons</li>
+        <li><strong>Methane Emission:</strong> ${methane.toFixed(2)} tons</li>
+        <li class="highlight"><strong>Total Emission:</strong> ${total.toFixed(2)} tons CO₂e</li>
+        <li><strong>Trees Required:</strong> ${trees}</li>
+        <li><strong>Green Credits:</strong> ${credits > 0 ? credits : 0}</li>
+      </ul>
+      <p><strong>Suggestions:</strong></p>
+      <ul>
+        <li>Utilize renewable energy sources</li>
+        <li>Upgrade to energy-efficient machinery</li>
+        <li>Implement green transportation methods</li>
+        <li>Monitor and capture methane emissions</li>
+      </ul>
+    `;
+
+    document.getElementById('report').innerHTML = htmlReport;
+
+    function downloadPDF() {
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const leftX = 20;
+  const labelWidth = 70;
+  let y = 20;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(18);
+  doc.setTextColor(13, 110, 253);
+  doc.text('EcoVision - Carbon Emission Summary Report', 105, y, { align: 'center' });
+
+  y += 10;
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(40);
+  doc.text(`Date: ${new Date().toLocaleDateString()}`, leftX, y);
+
+  y += 10;
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(0);
+  doc.text('Mine Details', leftX, y);
+
+  y += 8;
+  doc.setFont('helvetica', 'normal');
+  doc.text(`Mine Name:`, leftX, y);
+  doc.text(`${data.mineName}`, leftX + labelWidth, y);
+
+  y += 7;
+  doc.text(`Location:`, leftX, y);
+  doc.text(`${data.location}`, leftX + labelWidth, y);
+
+  y += 7;
+  doc.text(`Ownership:`, leftX, y);
+  doc.text(`${data.ownership}`, leftX + labelWidth, y);
+
+  y += 12;
+  doc.setFont('helvetica', 'bold');
+  doc.text('Emission Metrics', leftX, y);
+  doc.setFont('helvetica', 'normal');
+
+  y += 8;
+  doc.text(`Coal Emission (tons):`, leftX, y);
+  doc.text(`${data.coal}`, leftX + labelWidth, y);
+
+  y += 7;
+  doc.text(`Fuel Emission (tons):`, leftX, y);
+  doc.text(`${fuelEmission.toFixed(2)}`, leftX + labelWidth, y);
+
+  y += 7;
+  doc.text(`Electricity Emission (tons):`, leftX, y);
+  doc.text(`${elecEmission.toFixed(2)}`, leftX + labelWidth, y);
+
+  y += 7;
+  doc.text(`Methane Emission (tons):`, leftX, y);
+  doc.text(`${methane.toFixed(2)}`, leftX + labelWidth, y);
+
+  y += 7;
+  doc.setTextColor(180, 0, 0);
+  doc.setFont('helvetica', 'bold');
+  doc.text(`Total Emission (tons CO2e):`, leftX, y);
+  doc.text(`${total.toFixed(2)}`, leftX + labelWidth, y);
+
+  doc.setTextColor(0);
+  doc.setFont('helvetica', 'normal');
+  y += 12;
+  doc.setFont('helvetica', 'bold');
+  doc.text('Offset Recommendations', leftX, y);
+
+  y += 8;
+  doc.setFont('helvetica', 'normal');
+  doc.text(`Trees Required:`, leftX, y);
+  doc.text(`${trees}`, leftX + labelWidth, y);
+
+  y += 7;
+  doc.text(`Green Credits:`, leftX, y);
+  doc.text(`${credits > 0 ? credits : 0}`, leftX + labelWidth, y);
+
+  y += 12;
+  doc.setFont('helvetica', 'bold');
+  doc.text('Suggestions', leftX, y);
+
+  y += 8;
+  doc.setFont('helvetica', 'normal');
+  const suggestions = [
+    'Utilize renewable energy sources',
+    'Upgrade to energy-efficient machinery',
+    'Implement green transportation methods',
+    'Monitor and capture methane emissions'
+  ];
+  suggestions.forEach((suggestion) => {
+    const lines = doc.splitTextToSize(`• ${suggestion}`, 170);
+    doc.text(lines, leftX, y);
+    y += lines.length * 6;
+  });
+
+  doc.save(`${data.mineName.replace(/\s+/g, '_')}_report.pdf`);
+}
+
+
+  </script>
+</body>
+</html>
