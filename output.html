@@ -75,6 +75,27 @@
     const trees = Math.ceil(total / 0.021);
     const credits = Math.floor((1000 - total) / 10);
 
+    let suggestions = [];
+
+    if (total > 500000) {
+      suggestions = [
+        'Consider reducing coal usage or switching to cleaner alternatives.',
+        'Upgrade to energy-efficient vehicles and machinery.',
+        'Invest in renewable electricity like solar or wind.',
+        'Implement methane monitoring and capture systems.',
+        'Launch large-scale afforestation programs to offset emissions.',
+        'Consider purchasing green credits.'
+      ];
+    } else {
+      suggestions = [
+        'Your emission levels are within a good range. Great job!',
+        'Continue using energy-efficient technologies.',
+        'Maintain and improve renewable energy usage.',
+        'Promote a sustainability culture across all operations.',
+        'Stay consistent in emission monitoring and reporting.'
+      ];
+    }
+
     const htmlReport = `
       <p class="highlight">Mine Name: ${data.mineName}</p>
       <p class="highlight">Location: ${data.location}</p>
@@ -91,114 +112,103 @@
       </ul>
       <p><strong>Suggestions:</strong></p>
       <ul>
-        <li>Utilize renewable energy sources</li>
-        <li>Upgrade to energy-efficient machinery</li>
-        <li>Implement green transportation methods</li>
-        <li>Monitor and capture methane emissions</li>
+        ${suggestions.map(s => `<li>${s}</li>`).join('')}
       </ul>
     `;
 
     document.getElementById('report').innerHTML = htmlReport;
 
     function downloadPDF() {
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-  const leftX = 20;
-  const labelWidth = 70;
-  let y = 20;
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const leftX = 20;
+      const labelWidth = 70;
+      let y = 20;
 
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(18);
-  doc.setTextColor(13, 110, 253);
-  doc.text('EcoVision - Carbon Emission Summary Report', 105, y, { align: 'center' });
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(18);
+      doc.setTextColor(13, 110, 253);
+      doc.text('EcoVision - Carbon Emission Summary Report', 105, y, { align: 'center' });
 
-  y += 10;
-  doc.setFontSize(12);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(40);
-  doc.text(`Date: ${new Date().toLocaleDateString()}`, leftX, y);
+      y += 10;
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(40);
+      doc.text(`Date: ${new Date().toLocaleDateString()}`, leftX, y);
 
-  y += 10;
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(0);
-  doc.text('Mine Details', leftX, y);
+      y += 10;
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(0);
+      doc.text('Mine Details', leftX, y);
 
-  y += 8;
-  doc.setFont('helvetica', 'normal');
-  doc.text(`Mine Name:`, leftX, y);
-  doc.text(`${data.mineName}`, leftX + labelWidth, y);
+      y += 8;
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Mine Name:`, leftX, y);
+      doc.text(`${data.mineName}`, leftX + labelWidth, y);
 
-  y += 7;
-  doc.text(`Location:`, leftX, y);
-  doc.text(`${data.location}`, leftX + labelWidth, y);
+      y += 7;
+      doc.text(`Location:`, leftX, y);
+      doc.text(`${data.location}`, leftX + labelWidth, y);
 
-  y += 7;
-  doc.text(`Ownership:`, leftX, y);
-  doc.text(`${data.ownership}`, leftX + labelWidth, y);
+      y += 7;
+      doc.text(`Ownership:`, leftX, y);
+      doc.text(`${data.ownership}`, leftX + labelWidth, y);
 
-  y += 12;
-  doc.setFont('helvetica', 'bold');
-  doc.text('Emission Metrics', leftX, y);
-  doc.setFont('helvetica', 'normal');
+      y += 12;
+      doc.setFont('helvetica', 'bold');
+      doc.text('Emission Metrics', leftX, y);
+      doc.setFont('helvetica', 'normal');
 
-  y += 8;
-  doc.text(`Coal Emission (tons):`, leftX, y);
-  doc.text(`${data.coal}`, leftX + labelWidth, y);
+      y += 8;
+      doc.text(`Coal Emission (tons):`, leftX, y);
+      doc.text(`${data.coal}`, leftX + labelWidth, y);
 
-  y += 7;
-  doc.text(`Fuel Emission (tons):`, leftX, y);
-  doc.text(`${fuelEmission.toFixed(2)}`, leftX + labelWidth, y);
+      y += 7;
+      doc.text(`Fuel Emission (tons):`, leftX, y);
+      doc.text(`${fuelEmission.toFixed(2)}`, leftX + labelWidth, y);
 
-  y += 7;
-  doc.text(`Electricity Emission (tons):`, leftX, y);
-  doc.text(`${elecEmission.toFixed(2)}`, leftX + labelWidth, y);
+      y += 7;
+      doc.text(`Electricity Emission (tons):`, leftX, y);
+      doc.text(`${elecEmission.toFixed(2)}`, leftX + labelWidth, y);
 
-  y += 7;
-  doc.text(`Methane Emission (tons):`, leftX, y);
-  doc.text(`${methane.toFixed(2)}`, leftX + labelWidth, y);
+      y += 7;
+      doc.text(`Methane Emission (tons):`, leftX, y);
+      doc.text(`${methane.toFixed(2)}`, leftX + labelWidth, y);
 
-  y += 7;
-  doc.setTextColor(180, 0, 0);
-  doc.setFont('helvetica', 'bold');
-  doc.text(`Total Emission (tons CO2e):`, leftX, y);
-  doc.text(`${total.toFixed(2)}`, leftX + labelWidth, y);
+      y += 7;
+      doc.setTextColor(180, 0, 0);
+      doc.setFont('helvetica', 'bold');
+      doc.text(`Total Emission (tons CO2e):`, leftX, y);
+      doc.text(`${total.toFixed(2)}`, leftX + labelWidth, y);
 
-  doc.setTextColor(0);
-  doc.setFont('helvetica', 'normal');
-  y += 12;
-  doc.setFont('helvetica', 'bold');
-  doc.text('Offset Recommendations', leftX, y);
+      doc.setTextColor(0);
+      doc.setFont('helvetica', 'normal');
+      y += 12;
+      doc.setFont('helvetica', 'bold');
+      doc.text('Offset Recommendations', leftX, y);
 
-  y += 8;
-  doc.setFont('helvetica', 'normal');
-  doc.text(`Trees Required:`, leftX, y);
-  doc.text(`${trees}`, leftX + labelWidth, y);
+      y += 8;
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Trees Required:`, leftX, y);
+      doc.text(`${trees}`, leftX + labelWidth, y);
 
-  y += 7;
-  doc.text(`Green Credits:`, leftX, y);
-  doc.text(`${credits > 0 ? credits : 0}`, leftX + labelWidth, y);
+      y += 7;
+      doc.text(`Green Credits:`, leftX, y);
+      doc.text(`${credits > 0 ? credits : 0}`, leftX + labelWidth, y);
 
-  y += 12;
-  doc.setFont('helvetica', 'bold');
-  doc.text('Suggestions', leftX, y);
+      y += 12;
+      doc.setFont('helvetica', 'bold');
+      doc.text('Suggestions', leftX, y);
 
-  y += 8;
-  doc.setFont('helvetica', 'normal');
-  const suggestions = [
-    'Utilize renewable energy sources',
-    'Upgrade to energy-efficient machinery',
-    'Implement green transportation methods',
-    'Monitor and capture methane emissions'
-  ];
-  suggestions.forEach((suggestion) => {
-    const lines = doc.splitTextToSize(`• ${suggestion}`, 170);
-    doc.text(lines, leftX, y);
-    y += lines.length * 6;
-  });
+      y += 8;
+      doc.setFont('helvetica', 'normal');
+      suggestions.forEach((s) => {
+        const lines = doc.splitTextToSize(`• ${s}`, 170);
+        doc.text(lines, leftX, y);
+        y += lines.length * 6;
+      });
 
-  doc.save(`${data.mineName.replace(/\s+/g, '_')}_report.pdf`);
-}
-
-
+      doc.save(`${data.mineName.replace(/\s+/g, '_')}_report.pdf`);
+    }
   </script>
 </body>
 </html>
